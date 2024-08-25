@@ -1,12 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
-	import { RefreshCcw } from 'lucide-svelte';
 	import type { MovieSuggestionResponse, ErrorResponse, TmdbMovieDetails } from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Card } from '$lib/components/ui/card/index.js';
-	import { getFormattedMovieDuration } from '$lib/utils';
+	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
 
 	let movieDescription: string = '';
 	let submitting: boolean = false;
@@ -60,12 +58,18 @@
 	function handleReroll() {
 		handleSubmit(true);
 	}
+
+	function clearForm() {
+		suggestion = null;
+		movieData = null;
+		suggestedMovies = [];
+	}
 </script>
 
-<main class="max-w-[800px] mt-0 mx-auto px-2">
+<main class="container max-w-screen-md xl:max-w-screen-lg px-2">
 	<section class="my-8 p-2">
 		<div class="flex flex-col items-center text-center">
-			<h1 class="text-4xl font-black">Movie Mind</h1>
+			<h1 class="text-4xl font-black"><a href="/">Movie Mind</a></h1>
 			{#if !suggestion}
 				<p class="text-2xl max-w-96 font-light">
 					Describe the type of movie you'd like to watch and we'll suggest one for you!
@@ -97,59 +101,13 @@
 		<section>
 			<div class="flex flex-col w-full items-center justify-center">
 				<p class="text-sm font-light italic">Your description: {movieDescription}</p>
-				<Button variant="outline">Edit description</Button>
+				<Button variant="outline" on:click={clearForm}>Edit description</Button>
 			</div>
 			<h2 id="suggestion-header" class="text-3xl mb-4 font-bold py-2 text-center">
 				Your suggested movie
 			</h2>
-			<Card>
-				<img
-					class="w-full h-60 object-cover object-top rounded-t-md"
-					src={`https://image.tmdb.org/t/p/original${movieData.backdrop_path}`}
-					alt={movieData.title}
-				/>
-				<div class="p-4 flex gap-4">
-					<div class="-mt-24">
-						<img
-							class="md:w-48 h-48 md:h-64 rounded-md outline outline-1 outline-primary-foreground"
-							src={`https://image.tmdb.org/t/p/w500${movieData.poster_path}`}
-							alt={movieData.title}
-						/>
-					</div>
-					<div class="flex flex-col justify-between">
-						<div>
-							<h3 class="text-2xl font-bold">{movieData.title}</h3>
-							<p class="text-lg font-semibold">{new Date(movieData.release_date).getFullYear()}</p>
-							<p class="font-light">Runtime: {getFormattedMovieDuration(movieData.runtime)}</p>
-						</div>
-						<div class="flex gap-2">
-							<Button href={`/movie/${movieData.id}`} class="">Find a place to watch</Button>
-							<Button
-								variant="secondary"
-								class="flex gap-2 text-lg"
-								on:click={handleReroll}
-								disabled={submitting}><RefreshCcw /> Reroll</Button
-							>
-						</div>
-					</div>
-				</div>
-			</Card>
+			<MovieSuggestionCard {movieData} onReroll={handleReroll} {submitting} />
 		</section>
-	{/if}
-
-	{#if suggestedMovies.length > 0}
-		<div class="suggested-movies">
-			<h3>Previously Suggested Movies:</h3>
-			<ul>
-				{#each suggestedMovies as movie}
-					<li>{movie}</li>
-				{/each}
-			</ul>
-		</div>
-	{/if}
-
-	{#if error}
-		<p class="error">{error}</p>
 	{/if}
 </main>
 
