@@ -5,6 +5,7 @@ export interface MovieSuggestionResponse {
 	suggestedMovies: string[];
 	isReroll: boolean;
 	movieTmdb: TmdbMovieDetails;
+	watchProviders: WatchProviders;
 }
 
 export interface TmdbSearchObject {
@@ -70,4 +71,30 @@ export interface TmdbMovieDetails {
 
 export interface ErrorResponse {
 	error: string;
+}
+
+export interface WatchProviders {
+	link: string;
+	buy: Array<{
+		provider_id: number;
+		provider_name: string;
+		display_priority: number;
+	}>;
+	flatrate: Array<{
+		provider_id: number;
+		provider_name: string;
+		display_priority: number;
+	}>;
+	rent: Array<{
+		provider_id: number;
+		provider_name: string;
+		display_priority: number;
+	}>;
+}
+
+export interface TmdbMovieWatchProviders {
+	id: number;
+	results: {
+		[countryCode: string]: WatchProviders;
+	};
 }

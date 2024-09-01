@@ -67,3 +67,5 @@ export const getFormattedMovieDuration = (runtime: number) => {
 
 	return `${hours}${minutes}${seconds}`;
 };
+
+export const capitalise = (string: string) => string.charAt(0).toUpperCase() + string.slice(1);

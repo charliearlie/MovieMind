@@ -2,7 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getMovieSuggestion } from '$lib/anthropic';
 import { getSuggestedMovies } from '$lib/stores/suggestedMovies';
-import { getMovieDetailsFromTmdb } from '$lib/tmdb';
+import { getMovieDetailsFromTmdb, getWatchProvidersFromTmdb } from '$lib/tmdb';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.json();
@@ -16,6 +16,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const movieTitle = await getMovieSuggestion(movieDescription);
 		const movieTmdb = await getMovieDetailsFromTmdb(movieTitle.replace(/\[.*\]/, ''));
+		const watchProviders = await getWatchProvidersFromTmdb(movieTmdb.id);
 
 		if (!movieTitle) {
 			return error(500, 'No movie suggestion received');
@@ -29,7 +30,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			suggestion: movieTitle,
 			suggestedMovies: suggestedMovies,
 			isReroll: isReroll,
-			movieTmdb
+			movieTmdb,
+			watchProviders
 		});
 	} catch (err) {
 		console.error('Error processing movie description:', err);

@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { tick } from 'svelte';
-	import type { MovieSuggestionResponse, ErrorResponse, TmdbMovieDetails } from '$lib/types';
+	import type {
+		MovieSuggestionResponse,
+		ErrorResponse,
+		TmdbMovieDetails,
+		WatchProviders
+	} from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
@@ -12,6 +17,7 @@
 	let suggestion: string | null = null;
 	let suggestedMovies: string[] = [];
 	let movieData: TmdbMovieDetails | null = null;
+	let watchProviders: WatchProviders | null = null;
 
 	async function handleSubmit(isReroll: boolean = false): Promise<void> {
 		if (movieDescription.trim() || isReroll) {
@@ -32,6 +38,7 @@
 					suggestion = result.suggestion;
 					movieData = result.movieTmdb;
 					suggestedMovies = result.suggestedMovies;
+					watchProviders = result.watchProviders;
 
 					await tick();
 
@@ -66,14 +73,17 @@
 	}
 </script>
 
-<main class="container max-w-screen-md xl:max-w-screen-lg px-2">
+<main class="container max-w-screen-md px-2 xl:max-w-screen-lg">
 	<section class="my-8 p-2">
 		<div class="flex flex-col items-center text-center">
 			<h1 class="text-4xl font-black"><a href="/">Movie Mind</a></h1>
 			{#if !suggestion}
-				<p class="text-2xl max-w-96 font-light">
+				<p class="max-w-96 text-2xl font-light">
 					Describe the type of movie you'd like to watch and we'll suggest one for you!
 				</p>
+				<Button class="text-blue-500 hover:text-blue-700" variant="ghost"
+					>or fill in our questionnaire</Button
+				>
 			{/if}
 		</div>
 
@@ -86,7 +96,7 @@
 					rows={4}
 					disabled={submitting}
 				/>
-				<Button class="text-xl font-semibold py-8" type="submit" disabled={submitting}>
+				<Button class="py-8 text-xl font-semibold" type="submit" disabled={submitting}>
 					{#if submitting}
 						Submitting...
 					{:else}
@@ -99,14 +109,14 @@
 
 	{#if suggestion && movieData}
 		<section>
-			<div class="flex flex-col w-full items-center justify-center">
+			<div class="flex w-full flex-col items-center justify-center">
 				<p class="text-sm font-light italic">Your description: {movieDescription}</p>
 				<Button variant="outline" on:click={clearForm}>Edit description</Button>
 			</div>
-			<h2 id="suggestion-header" class="text-3xl mb-4 font-bold py-2 text-center">
+			<h2 id="suggestion-header" class="mb-4 py-2 text-center text-3xl font-bold">
 				Your suggested movie
 			</h2>
-			<MovieSuggestionCard {movieData} onReroll={handleReroll} {submitting} />
+			<MovieSuggestionCard {movieData} {watchProviders} onReroll={handleReroll} {submitting} />
 		</section>
 	{/if}
 </main>
