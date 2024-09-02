@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { tick } from 'svelte';
 	import type {
 		MovieSuggestionResponse,
 		ErrorResponse,
@@ -9,7 +8,7 @@
 	} from '$lib/types';
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
+	import { Send } from 'lucide-svelte';
 
 	let movieDescription: string = '';
 	let submitting: boolean = false;
@@ -34,20 +33,11 @@
 
 				if (response.ok) {
 					const result: MovieSuggestionResponse = await response.json();
+					goto(`/movie/selection/${result.tmdbId}`);
 					console.log('Server response:', result);
 					suggestion = result.suggestion;
-					movieData = result.movieTmdb;
 					suggestedMovies = result.suggestedMovies;
 					watchProviders = result.watchProviders;
-
-					await tick();
-
-					setTimeout(() => {
-						const header = document.getElementById('suggestion-header');
-						if (header) {
-							header.scrollIntoView({ behavior: 'smooth' });
-						}
-					}, 100);
 				} else {
 					const errorResult: ErrorResponse = await response.json();
 					error = errorResult.error || 'Failed to submit description';
@@ -61,112 +51,80 @@
 			}
 		}
 	}
-
-	function handleReroll() {
-		handleSubmit(true);
-	}
-
-	function clearForm() {
-		suggestion = null;
-		movieData = null;
-		suggestedMovies = [];
-	}
 </script>
 
-<main class="container max-w-screen-md px-2 xl:max-w-screen-lg">
+<main
+	class="container -mt-14 flex h-screen max-w-screen-sm items-center justify-center px-2 xl:max-w-screen-md"
+>
 	<section class="my-8 p-2">
-		<div class="flex flex-col items-center text-center">
-			<h1 class="text-4xl font-black"><a href="/">Movie Mind</a></h1>
-			{#if !suggestion}
-				<p class="max-w-96 text-2xl font-light">
-					Describe the type of movie you'd like to watch and we'll suggest one for you!
-				</p>
-				<Button class="text-blue-500 hover:text-blue-700" variant="ghost"
-					>or fill in our questionnaire</Button
-				>
-			{/if}
-		</div>
-
 		{#if !suggestion && movieData === null}
-			<form class="pt-8" on:submit|preventDefault={() => handleSubmit(false)}>
-				<Textarea
-					class="text-xl"
-					bind:value={movieDescription}
-					placeholder="Enter a description of the movie you're looking for..."
-					rows={4}
-					disabled={submitting}
-				/>
-				<Button class="py-8 text-xl font-semibold" type="submit" disabled={submitting}>
-					{#if submitting}
-						Submitting...
-					{:else}
-						Find Movie
-					{/if}
-				</Button>
+			<div class="flex flex-col items-center text-center">
+				<h1 class="text-4xl font-black tracking-tight">
+					<a href="/">Let us help you find a movie</a>
+				</h1>
+				{#if !suggestion}
+					<p
+						class="md:typing-animation pr-1 text-xl text-violet-200 md:overflow-hidden md:whitespace-nowrap md:border-r-4 md:border-r-violet-200"
+					>
+						Let Movie Mind choose a movie for you based on your requirements
+					</p>
+				{/if}
+			</div>
+			<form
+				class="flex flex-col items-center gap-4 pt-8"
+				on:submit|preventDefault={() => handleSubmit(false)}
+			>
+				<div class="relative w-full">
+					<Textarea
+						class="h-48 w-full resize-none rounded-lg border-2 border-violet-300 bg-white px-4 py-2 text-gray-700 shadow-md focus:border-violet-500 focus:outline-none md:text-xl"
+						bind:value={movieDescription}
+						placeholder="Enter a description of the movie you're looking for..."
+						rows={6}
+						disabled={submitting}
+					/>
+					<Button
+						class="absolute bottom-2 right-2 flex w-max gap-2 rounded-full py-4 shadow-md md:text-lg md:font-semibold"
+						type="submit"
+						disabled={submitting}
+					>
+						<Send />
+
+						{#if submitting}
+							Submitting...
+						{:else}
+							Find Movie
+						{/if}
+					</Button>
+				</div>
 			</form>
+			<!-- <Button class="bg-purple-700" variant="outline">or fill in our questionnaire</Button> -->
 		{/if}
 	</section>
-
-	{#if suggestion && movieData}
-		<section>
-			<div class="flex w-full flex-col items-center justify-center">
-				<p class="text-sm font-light italic">Your description: {movieDescription}</p>
-				<Button variant="outline" on:click={clearForm}>Edit description</Button>
-			</div>
-			<h2 id="suggestion-header" class="mb-4 py-2 text-center text-3xl font-bold">
-				Your suggested movie
-			</h2>
-			<MovieSuggestionCard {movieData} {watchProviders} onReroll={handleReroll} {submitting} />
-		</section>
-	{/if}
 </main>
 
 <style>
-	form {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
+	@keyframes typing {
+		from {
+			width: 0;
+		}
+		to {
+			width: 100%;
+		}
 	}
 
-	button {
-		padding: 10px 20px;
-		background-color: #4caf50;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 16px;
+	@keyframes blink-caret {
+		from,
+		to {
+			border-color: transparent;
+		}
+		50% {
+			border-color: #8b5cf6;
+		}
 	}
 
-	button:hover:not(:disabled) {
-		background-color: #45a049;
-	}
-
-	button:disabled {
-		background-color: #cccccc;
-		cursor: not-allowed;
-	}
-
-	.error {
-		color: red;
-		text-align: center;
-		margin-top: 10px;
-	}
-
-	.suggestion,
-	.suggested-movies {
-		margin-top: 20px;
-		padding: 10px;
-		border: 1px solid #ccc;
-		border-radius: 4px;
-	}
-
-	ul {
-		list-style-type: none;
-		padding: 0;
-	}
-
-	li {
-		margin-bottom: 5px;
+	.typing-animation {
+		animation:
+			typing 3.5s steps(40, end),
+			blink-caret 0.75s step-end infinite;
 	}
 </style>

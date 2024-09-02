@@ -1,8 +1,9 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getMovieSuggestion } from '$lib/anthropic';
-import { getSuggestedMovies } from '$lib/stores/suggestedMovies';
-import { getMovieDetailsFromTmdb, getWatchProvidersFromTmdb } from '$lib/tmdb';
+import { getSuggestedMovies, setCurrentlySuggestedMovieId } from '$lib/stores/suggestedMovies';
+import { getMovieIdFromTmdb, getWatchProvidersFromTmdb } from '$lib/tmdb';
+import { addPromptToHistory, setActivePrompt } from '$lib/stores/prompts';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.json();
@@ -15,13 +16,16 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	try {
 		const movieTitle = await getMovieSuggestion(movieDescription);
-		const movieTmdb = await getMovieDetailsFromTmdb(movieTitle.replace(/\[.*\]/, ''));
-		const watchProviders = await getWatchProvidersFromTmdb(movieTmdb.id);
+		const tmdbId = await getMovieIdFromTmdb(movieTitle.replace(/\[.*\]/, ''));
+		const watchProviders = await getWatchProvidersFromTmdb(tmdbId);
 
 		if (!movieTitle) {
 			return error(500, 'No movie suggestion received');
 		}
 
+		setActivePrompt(movieDescription);
+		addPromptToHistory(movieDescription);
+		setCurrentlySuggestedMovieId(tmdbId);
 		const suggestedMovies = getSuggestedMovies();
 
 		return json({
@@ -30,7 +34,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			suggestion: movieTitle,
 			suggestedMovies: suggestedMovies,
 			isReroll: isReroll,
-			movieTmdb,
+			tmdbId,
 			watchProviders
 		});
 	} catch (err) {
