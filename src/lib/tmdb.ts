@@ -29,8 +29,7 @@ export async function getMovieIdFromTmdb(title: string) {
 	return movie.id;
 }
 
-export async function getMovieDetailsFromTmdb(title: string) {
-	const movieId = await getMovieIdFromTmdb(title);
+export async function getMovieDetailsFromTmdb(movieId: number) {
 	const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}`, {
 		method: 'GET',
 		headers: {
@@ -53,8 +52,6 @@ export async function getWatchProvidersFromTmdb(tmdbId: number) {
 		}
 	});
 	const data = (await response.json()) as TmdbMovieWatchProviders;
-
-	console.log(data.results.GB.buy);
 
 	return data.results.GB;
 }
