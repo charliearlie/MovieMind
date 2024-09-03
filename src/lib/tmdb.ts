@@ -1,5 +1,10 @@
 import { TMDB_ACCESS_TOKEN } from '$env/static/private';
-import type { TmdbMovieDetails, TmdbMovieWatchProviders, TmdbSearchObject } from './types';
+import type {
+	TmdbCredits,
+	TmdbMovieDetails,
+	TmdbMovieWatchProviders,
+	TmdbSearchObject
+} from './types';
 
 export async function getSuggestedMovieFromTmdb(description: string) {
 	const response = await fetch(`https://api.themoviedb.org/3/search/movie?query=${description}`, {
@@ -39,6 +44,22 @@ export async function getMovieDetailsFromTmdb(movieId: number) {
 	});
 
 	const data = (await response.json()) as TmdbMovieDetails;
+
+	return data;
+}
+
+export async function getCreditsFromTmdb(movieId: number) {
+	const response = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${TMDB_ACCESS_TOKEN}`,
+			'Content-Type': 'application/json'
+		}
+	});
+
+	const data = (await response.json()) as TmdbCredits;
+
+	console.log({ creditData: data });
 
 	return data;
 }

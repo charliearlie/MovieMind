@@ -35,7 +35,7 @@
 								</Tooltip.Content>
 							</Tooltip.Root>
 						</div>
-						<div class="flex w-full justify-center gap-2 md:justify-start">
+						<div class="flex w-full flex-wrap justify-center gap-2 md:justify-start">
 							{#each value as provider}
 								<div class="flex w-20 flex-col items-center">
 									<img
