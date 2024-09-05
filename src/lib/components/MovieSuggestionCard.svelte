@@ -1,39 +1,15 @@
 <script lang="ts">
-	import { RefreshCcw } from 'lucide-svelte';
 	import { Card } from '$lib/components/ui/card/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { CastMember, CrewMember, TmdbMovieDetails, WatchProviders } from '$lib/types';
 	import { getFormattedMovieDuration } from '$lib/utils';
 	import WatchProvidersSection from './WatchProviders.svelte';
 	import Cast from './Cast.svelte';
-	import { onMount } from 'svelte';
 
 	export let cast: CastMember[] = [];
 	export let directors: CrewMember[] = [];
 	export let movieData: TmdbMovieDetails;
 	export let watchProviders: WatchProviders | null;
-
-	let expanded = false;
-	let overviewElement: HTMLParagraphElement;
-	let isOverflowing = false;
-
-	onMount(() => {
-		checkOverflow();
-	});
-
-	function checkOverflow() {
-		if (overviewElement) {
-			isOverflowing = overviewElement.scrollHeight > overviewElement.clientHeight;
-		}
-	}
-
-	function toggleExpand() {
-		expanded = !expanded;
-	}
-
-	console.log('cast', cast);
-	console.log('directors', directors);
 </script>
 
 <div class="w-full rounded-t-none">
@@ -45,7 +21,7 @@
 	<div
 		class="container flex max-w-screen-lg flex-col items-center gap-4 p-4 md:flex-row md:items-start"
 	>
-		<div class="-mt-24">
+		<div class="-mt-24 space-y-2">
 			<Card class="outline outline-1 outline-slate-300">
 				<img
 					class="h-96 min-w-64 rounded-md outline outline-1 outline-primary-foreground md:h-[29rem] md:w-96"
@@ -70,28 +46,17 @@
 					</div>
 				{/if}
 				<div class="mt-4 max-w-[850px]">
-					<p
-						bind:this={overviewElement}
-						class="text-slate-300"
-						class:h-24={!expanded}
-						class:overflow-hidden={!expanded}
-					>
+					<p class="text-slate-300">
 						{movieData.overview}
-						{#if isOverflowing && !expanded}
-							<span>...</span>
-						{/if}
 					</p>
-					{#if isOverflowing}
-						<Button variant="link" on:click={toggleExpand} class="mt-1 p-0 text-sm text-blue-400">
-							{expanded ? 'Show Less' : 'Show More'}
-						</Button>
-					{/if}
 				</div>
-				{#if cast && cast.length > 0}
-					<Cast {cast} />
-				{/if}
 			</div>
 		</div>
 	</div>
-	<WatchProvidersSection {watchProviders} />
+	<div class="flex w-full flex-col items-center gap-4 p-4 md:items-start">
+		{#if cast && cast.length > 0}
+			<Cast {cast} />
+		{/if}
+		<WatchProvidersSection {watchProviders} />
+	</div>
 </div>

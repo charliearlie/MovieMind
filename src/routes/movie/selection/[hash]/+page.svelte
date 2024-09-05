@@ -5,7 +5,7 @@
 	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
 
 	export let data: PageData;
-	const { cast, directors, movie: movieData, watchProviders, writers } = data.props;
+	const { cast, directors, movie: movieData, watchProviders } = data.props;
 
 	onMount(() => {
 		if (!movieData || !movieData.id) {

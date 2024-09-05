@@ -13,4 +13,10 @@
 		</a>
 	</header>
 	<slot />
+	<footer class="flex h-14 items-center justify-center bg-slate-800 text-slate-200">
+		<p class="text-center">
+			&copy; {new Date().getFullYear()} Movie Mind. Built with SvelteKit by
+			<a class="text-blue-400" href="https://www.github.com/charliearlie">Charlie Waite</a>
+		</p>
+	</footer>
 </div>
