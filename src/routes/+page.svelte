@@ -33,7 +33,7 @@
 
 				if (response.ok) {
 					const result: MovieSuggestionResponse = await response.json();
-					goto(`/movie/selection/${result.tmdbId}`);
+					goto(`/movie/selection/${result.hash}`);
 					console.log('Server response:', result);
 					suggestion = result.suggestion;
 					suggestedMovies = result.suggestedMovies;
@@ -64,8 +64,11 @@
 				</h1>
 				{#if !suggestion}
 					<p
-						class="md:typing-animation pr-1 text-xl text-violet-200 md:overflow-hidden md:whitespace-nowrap md:border-r-4 md:border-r-violet-200"
+						class="typing-animation hidden pr-1 text-xl text-violet-200 md:block md:overflow-hidden md:whitespace-nowrap md:border-r-4 md:border-r-violet-200"
 					>
+						Let Movie Mind choose a movie for you based on your requirements
+					</p>
+					<p class="pr-1 text-xl text-violet-200 md:hidden md:overflow-hidden md:whitespace-nowrap">
 						Let Movie Mind choose a movie for you based on your requirements
 					</p>
 				{/if}
