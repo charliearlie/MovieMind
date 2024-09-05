@@ -3,6 +3,7 @@ export interface MovieSuggestionResponse {
 	description: string;
 	suggestion: string;
 	suggestedMovies: string[];
+	hash: string;
 	isReroll: boolean;
 	tmdbId: number;
 	watchProviders: WatchProviders;

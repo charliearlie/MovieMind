@@ -1,9 +1,11 @@
+import { generateSlug } from 'random-word-slugs';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getMovieSuggestion } from '$lib/anthropic';
 import { getSuggestedMovies, setCurrentlySuggestedMovieId } from '$lib/stores/suggestedMovies';
 import { getMovieIdFromTmdb, getWatchProvidersFromTmdb } from '$lib/tmdb';
 import { addPromptToHistory, setActivePrompt } from '$lib/stores/prompts';
+import prisma from '$lib/prisma';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const data = await request.json();
@@ -28,12 +30,24 @@ export const POST: RequestHandler = async ({ request }) => {
 		setCurrentlySuggestedMovieId(tmdbId);
 		const suggestedMovies = getSuggestedMovies();
 
+		const slug = generateSlug(3, { format: 'kebab' });
+
+		const promptResult = await prisma.promptResult.create({
+			data: {
+				id: slug,
+				prompt: movieDescription,
+				claudeResponse: movieTitle,
+				tmdbId
+			}
+		});
+
 		return json({
 			message: 'Description processed successfully',
 			description: movieDescription,
 			suggestion: movieTitle,
 			suggestedMovies: suggestedMovies,
 			isReroll: isReroll,
+			hash: promptResult.id,
 			tmdbId,
 			watchProviders
 		});
