@@ -37,6 +37,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				id: slug,
 				prompt: movieDescription,
 				claudeResponse: movieTitle,
+				isReroll,
 				tmdbId
 			}
 		});

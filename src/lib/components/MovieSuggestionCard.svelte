@@ -5,10 +5,12 @@
 	import { getFormattedMovieDuration } from '$lib/utils';
 	import WatchProvidersSection from './WatchProviders.svelte';
 	import Cast from './Cast.svelte';
+	import SuggestionRating from './SuggestionRating/SuggestionRating.svelte';
 
 	export let cast: CastMember[] = [];
 	export let directors: CrewMember[] = [];
 	export let movieData: TmdbMovieDetails;
+	export let suggestionRating: boolean | null;
 	export let watchProviders: WatchProviders | null;
 </script>
 
@@ -32,9 +34,11 @@
 		</div>
 		<div class="flex flex-grow flex-col items-center text-center md:items-start md:text-start">
 			<div class="flex-grow">
-				<div class="flex flex-col justify-center gap-3 md:flex-row md:items-end md:justify-start">
-					<h2 class="text-3xl font-bold">{movieData.title}</h2>
-					<p class="text-lg">{new Date(movieData.release_date).getFullYear()}</p>
+				<div>
+					<div class="flex flex-col justify-center gap-3 md:flex-row md:items-end md:justify-start">
+						<h2 class="text-3xl font-bold">{movieData.title}</h2>
+						<p class="text-lg">{new Date(movieData.release_date).getFullYear()}</p>
+					</div>
 				</div>
 				<p class="text-slate-200">Directed by {directors[0].name}</p>
 				<p class="text-slate-300">{getFormattedMovieDuration(movieData.runtime)}</p>
@@ -50,6 +54,9 @@
 						{movieData.overview}
 					</p>
 				</div>
+				{#if suggestionRating === null}
+					<SuggestionRating />
+				{/if}
 			</div>
 		</div>
 	</div>

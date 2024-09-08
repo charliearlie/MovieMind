@@ -53,6 +53,20 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Movie Mind</title>
+	<meta
+		name="description"
+		content="Let Movie Mind choose a movie for you based on your requirements"
+	/>
+	<meta name="robots" content="noindex, nofollow" />
+
+	<meta property="og:site_name" content="MovieMind | Homepage" />
+	<meta property="og:locale" content="en" />
+	<meta property="og:type" content="website" />
+	<meta property="og:image" content={`/moviemind.jpg`} />
+</svelte:head>
+
 <main
 	class="container -mt-14 flex h-screen max-w-screen-sm items-center justify-center px-2 xl:max-w-screen-md"
 >

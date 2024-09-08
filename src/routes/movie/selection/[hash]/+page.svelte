@@ -5,7 +5,7 @@
 	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
 
 	export let data: PageData;
-	const { cast, directors, movie: movieData, watchProviders } = data.props ?? {};
+	const { cast, directors, movie: movieData, suggestionRating, watchProviders } = data.props ?? {};
 
 	onMount(() => {
 		if (!movieData || !movieData.id) {
@@ -17,7 +17,7 @@
 {#if movieData && movieData.id && watchProviders !== undefined}
 	<main>
 		<div class="flex justify-center">
-			<MovieSuggestionCard {cast} {directors} {movieData} {watchProviders} />
+			<MovieSuggestionCard {cast} {directors} {movieData} {suggestionRating} {watchProviders} />
 		</div>
 	</main>
 {/if}

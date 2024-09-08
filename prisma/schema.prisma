@@ -19,7 +19,7 @@ model PromptResult {
   claudeResponse    String
   tmdbId            Int
   isReroll          Boolean @default(false)
-  suggestionRating  Int?    @default(0)
+  suggestionRating  Boolean?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
