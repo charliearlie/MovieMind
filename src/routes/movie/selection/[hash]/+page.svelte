@@ -3,21 +3,30 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import MovieSuggestionCard from '$lib/components/MovieSuggestionCard.svelte';
+	import { page } from '$app/stores';
 
 	export let data: PageData;
-	const { cast, directors, movie: movieData, suggestionRating, watchProviders } = data.props ?? {};
+
+	$: ({ props } = $page.data);
 
 	onMount(() => {
-		if (!movieData || !movieData.id) {
+		if (!props?.movie || !props.movie.id) {
 			goto('/');
 		}
 	});
 </script>
 
-{#if movieData && movieData.id && watchProviders !== undefined}
+{#if props?.movie && props.movie.id && props.watchProviders !== undefined}
 	<main>
 		<div class="flex justify-center">
-			<MovieSuggestionCard {cast} {directors} {movieData} {suggestionRating} {watchProviders} />
+			<MovieSuggestionCard
+				activePrompt={props.activePrompt}
+				cast={props.cast}
+				directors={props.directors}
+				movieData={props.movie}
+				suggestionRating={props.suggestionRating}
+				watchProviders={props.watchProviders}
+			/>
 		</div>
 	</main>
 {/if}

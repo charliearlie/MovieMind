@@ -14,9 +14,7 @@
 	let submitting: boolean = false;
 	let error: string | null = null;
 	let suggestion: string | null = null;
-	let suggestedMovies: string[] = [];
 	let movieData: TmdbMovieDetails | null = null;
-	let watchProviders: WatchProviders | null = null;
 
 	async function handleSubmit(isReroll: boolean = false): Promise<void> {
 		if (movieDescription.trim() || isReroll) {
@@ -34,10 +32,6 @@
 				if (response.ok) {
 					const result: MovieSuggestionResponse = await response.json();
 					goto(`/movie/selection/${result.hash}`);
-					console.log('Server response:', result);
-					suggestion = result.suggestion;
-					suggestedMovies = result.suggestedMovies;
-					watchProviders = result.watchProviders;
 				} else {
 					const errorResult: ErrorResponse = await response.json();
 					error = errorResult.error || 'Failed to submit description';

@@ -1,5 +1,12 @@
+import { getMovieSuggestion } from '$lib/anthropic';
 import prisma from '$lib/prisma';
-import { getCreditsFromTmdb, getMovieDetailsFromTmdb, getWatchProvidersFromTmdb } from '$lib/tmdb';
+import {
+	getCreditsFromTmdb,
+	getMovieDetailsFromTmdb,
+	getMovieIdFromTmdb,
+	getWatchProvidersFromTmdb
+} from '$lib/tmdb';
+import { generateSlug } from 'random-word-slugs';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -28,6 +35,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	return {
 		props: {
+			activePrompt: moviePrompt.prompt,
 			directors,
 			cast,
 			movie,
@@ -54,5 +62,36 @@ export const actions: Actions = {
 		});
 
 		return { success: true };
+	},
+	reroll: async ({ params, request }) => {
+		try {
+			const id = params.hash as string;
+			const formData = await request.formData();
+			const prompt = formData.get('activePrompt') as string;
+
+			const movieTitle = await getMovieSuggestion(prompt);
+			const tmdbId = await getMovieIdFromTmdb(movieTitle.replace(/\[.*\]/, ''));
+
+			const slug = generateSlug(3, { format: 'kebab' });
+
+			const promptResult = await prisma.promptResult.create({
+				data: {
+					id: slug,
+					prompt,
+					claudeResponse: movieTitle,
+					isReroll: true,
+					tmdbId
+				}
+			});
+
+			console.log('Reroll successful:', promptResult);
+
+			return {
+				id: promptResult.id
+			};
+		} catch (error) {
+			console.error('Error in reroll action:', error);
+			return { error: 'An error occurred during reroll' };
+		}
 	}
 };
