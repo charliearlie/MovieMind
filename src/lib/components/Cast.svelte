@@ -13,7 +13,7 @@
 		{#each cast as castMember}
 			<div class="flex flex-col items-center gap-1">
 				<img
-					class="h-36 rounded-sm object-cover md:h-48"
+					class="h-36 w-full rounded-sm object-cover md:h-48"
 					src={`https://image.tmdb.org/t/p/w500${castMember.profile_path}`}
 					alt={castMember.name}
 				/>

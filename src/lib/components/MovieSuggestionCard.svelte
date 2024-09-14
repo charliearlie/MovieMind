@@ -146,7 +146,7 @@
 					</p>
 				</div>
 				{#if displayedSuggestionRating === null}
-					<SuggestionRating />
+					<SuggestionRating {activePrompt} {handleReroll} />
 				{/if}
 			</div>
 		</div>

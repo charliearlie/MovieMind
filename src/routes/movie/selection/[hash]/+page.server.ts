@@ -68,8 +68,12 @@ export const actions: Actions = {
 			const id = params.hash as string;
 			const formData = await request.formData();
 			const prompt = formData.get('activePrompt') as string;
+			console.log('Rerolling prompt:', prompt);
+
+			if (!prompt) throw new Error('No prompt provided for reroll');
 
 			const movieTitle = await getMovieSuggestion(prompt);
+			console.log('Reroll movie title:', movieTitle);
 			const tmdbId = await getMovieIdFromTmdb(movieTitle.replace(/\[.*\]/, ''));
 
 			const slug = generateSlug(3, { format: 'kebab' });
